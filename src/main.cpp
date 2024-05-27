@@ -1,7 +1,6 @@
 
-#include "main.h"
-#include "utils.h"
-#include "yolov8Predictor.h"
+
+
 
 #include <regex>
 #include <iostream>
@@ -14,13 +13,17 @@
 #include <sys/resource.h>
 
 
+#include "streamline_annotate.h"
+#include "utils.h"
+#include "yolov8Predictor.h"
 
 
 
-int run (int argc, char *argv[])
-{
 
-    float confThreshold = 0.4f;
+
+int main(int argc, char *argv[]) {
+  gator_annotate_setup();
+  float confThreshold = 0.4f;
     float iouThreshold = 0.4f;
 
     float maskThreshold = 0.5f;
@@ -97,18 +100,7 @@ int run (int argc, char *argv[])
     }
  
     cap.release();
-    return 0;
-}
-
-
-int main(int argc, char *argv[]) {
-  InitializePerfetto();
-  Observer observer;
-  observer.WaitForTracingStart();
-  int status =  run(argc,argv);
-  perfetto::TrackEvent::Flush();
-
-  return status;
+  return 1;
 }
 
 

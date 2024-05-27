@@ -11,7 +11,8 @@ find_package(OpenCV REQUIRED)
 
 include_directories(sdk)
 include_directories(include)
-add_library(perfetto STATIC sdk/perfetto.cc)
+include_directories(${CMAKE_SOURCE_DIR}/gator/annotate)
+
 
 
 
@@ -19,7 +20,6 @@ add_executable(yolov8_ort
                src/utils.cpp
                src/yolov8Predictor.cpp
                src/main.cpp
-               src/trace_categories.cc
                )
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
@@ -28,4 +28,5 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 target_include_directories(yolov8_ort PRIVATE ${CMAKE_SOURCE_DIR}/onnxruntime-linux-aarch64-1.18.0/include)
 
 target_compile_features(yolov8_ort PRIVATE cxx_std_17)
-target_link_libraries(yolov8_ort  perfetto ${CMAKE_SOURCE_DIR}/onnxruntime-linux-aarch64-1.18.0/lib/libonnxruntime.so  ${OpenCV_LIBS} pthread)
+target_link_libraries(yolov8_ort ${CMAKE_SOURCE_DIR}/onnxruntime-linux-aarch64-1.18.0/lib/libonnxruntime.so ${CMAKE_SOURCE_DIR}/gator/annotate/libstreamline_annotate.so  ${OpenCV_LIBS} pthread)
+

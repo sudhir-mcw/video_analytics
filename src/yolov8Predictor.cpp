@@ -1,5 +1,6 @@
 #include "yolov8Predictor.h"
-#include  "main.h"
+
+#include "streamline_annotate.h"
 
 
 YOLOPredictor::YOLOPredictor(const std::string &modelPath,
@@ -8,7 +9,6 @@ YOLOPredictor::YOLOPredictor(const std::string &modelPath,
                              float iouThreshold,
                              float maskThreshold)
 {
-    TRACE_EVENT("rendering", " predictor contructor");
     this->confThreshold = confThreshold;
     this->iouThreshold = iouThreshold;
     this->maskThreshold = maskThreshold;
@@ -127,7 +127,7 @@ cv::Mat YOLOPredictor::getMask(const cv::Mat &maskProposals,
 
 void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int64_t> &inputTensorShape)
 {
-    TRACE_EVENT("rendering", "pre process");
+    ANNOTATE_COLOR(ANNOTATE_PURPLE,"pre process");
  
     cv::Mat resizedImage, floatImage;
     cv::cvtColor(image, resizedImage, cv::COLOR_BGR2RGB);
@@ -149,13 +149,16 @@ void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int6
         chw[i] = cv::Mat(floatImageSize, CV_32FC1, blob + i * floatImageSize.width * floatImageSize.height);
     }
     cv::split(floatImage, chw);
+    ANNOTATE_END();
+   ANNOTATE_COLOR(ANNOTATE_PURPLE,"pre process start");
+   ANNOTATE_END();
 }
 
 std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedImageShape,
                                                         const cv::Size &originalImageShape,
                                                         std::vector<Ort::Value> &outputTensors,cv::Mat& image)
 {
-    TRACE_EVENT("rendering", "post process");
+    ANNOTATE_COLOR(ANNOTATE_PURPLE,"post process start");
     std::string classNamesPath = "./models/coco.names";
     const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
     std::vector<cv::Rect> boxes;
@@ -223,12 +226,14 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
         results.emplace_back(res);
     }
    utils::visualizeDetection(image, results, classNames); 
+   ANNOTATE_END();
+    ANNOTATE_COLOR(ANNOTATE_PURPLE,"post process end");
+    ANNOTATE_END();
     return results;
 }
 
 std::vector<Yolov8Result> YOLOPredictor::predict(cv::Mat &image)
 {
-    TRACE_EVENT("rendering", "predict");
     float *blob = nullptr;
     std::vector<int64_t> inputTensorShape{1, 3, -1, -1};
     this->preprocessing(image, blob, inputTensorShape);

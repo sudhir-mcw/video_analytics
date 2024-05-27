@@ -1,25 +1,13 @@
 
 
-#include "main.h"
+
 
 
 #include "utils.h"
 #include <sys/sysinfo.h>
 
+#include "streamline_annotate.h"
 
-
-
-void InitializePerfetto() {
-  perfetto::TracingInitArgs args;
-  // The backends determine where trace events are recorded. For this example we
-  // are going to use the system-wide tracing service, so that we can see our
-  // app's events in context with system profiling information.
-  args.backends = perfetto::kSystemBackend;
-  args.enable_system_consumer = false;
-
-  perfetto::Tracing::Initialize(args);
-  perfetto::TrackEvent::Register();
-}
 
 
 

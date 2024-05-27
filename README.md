@@ -2,20 +2,12 @@
 
 **C++ YOLOv8 ONNXRuntime** inference code for *Object Detection* 
 
-
-
-
-
-
 ## Prequisites:
 - OpenCV 4
 - ONNXRuntime 
 - Perfetto 
 - CMake version 3.13+
 - Make version 4.2.1+
-
-
-
 
 
 ## Installation
@@ -38,80 +30,63 @@ wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxrunt
 tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
 
-- Download the perfetto binaries from the github repo 
+- Download the streamline gator agent and build the linux gator agent
 ```
-    mkdir perfetto 
-    cd perfetto 
-    wget https://github.com/google/perfetto/releases/download/v45.0/linux-arm64.zip
-    unzip linux-arm64.zip
-    cd linux-arm64
-    chmod +x *
-    
+git clone https://github.com/ARM-software/gator.git
+cd gator
+chmod +x ./build-linux.sh
+./build-linux.sh    
 ```
+Followed by that build the libstreamline_annotate.so files
+```
+cd gator/annotate
+make 
+```
+The above command will create a build-native-gcc-rel folder will **gatord** binaries.
+
 
 # Build and Run in Linux
 
-- Clone the repo and switch to cpp_perfetto
+- Clone the repo and switch to cpp_streamline
 ```
     git clone https://github.com/sudhir-mcw/face-analytics-pipeline.git
     cd face-analytics-pipeline
-    git checkout cpp_perfetto
+    git checkout cpp_streamline
 ```
 - Build the project using 
 ```
     sh build.sh
 ``` 
 
-- To run the project 
-open three terminal  and follow the steps in individual windows,
-Navigate to previosly extracted linux-arm64/ folder in all the terminals
-Example 
+- To run the project  
+
+Run the gator agent using any one method 1 or 2 in terminal 1 
+*  Setup remote target machine in which the target device will stream data back to host machine which has streamline agent
 ```
-cd face-analytics-pipeline/perfetto/linux-arm64
+    cd gator/build-native-gcc-rel/
+    sudo ./gatord -S yes -a -p 5050
 ```
-Terminal 1 
+*  Setup on target capture which stores the capture to a folder
 ```
-sudo ./tracebox traced
+    cd gator/build-native-gcc-rel/
+    sudo ./gatord -S yes -o  ../capture.apc
 ```
-Terminal 2 
+Note : While running on local capture use ctrl+c to exit the capture and capture files to be dumped 
+
+* Run the application in terminal 2
 ```
-sudo ./traced_probes
-```
-Terminal 3
-```
-sudo ./tracebox perfetto -c <path_to_config_file> --txt -o trace_file 
-```
-Here path to config is root_of_the_project/system_wide_trace_cfg.pbtxt \
-Example Usage
-```
-sudo ./tracebox perfetto -c ../../system_wide_trace_cfg.pbtxt --txt -o ../output/trace_file 
-``` 
-Once you see enabled ftrace in the Terminal 2 window run the command
-Terminal 4 
-```
-   cd face-analytics-pipeline
-   sudo  sh run.sh <no_of_frames> 
+    sh run <no_of_frames>
 ```
 Example: to limit the no of frames from the video 
 ```
-   sudo sh run.sh 50 
+    sh run.sh 50 
 ```
 
-Note: Inorder to collect the trace for 100 frames increase the duration in system_wide_trace_cfg.pbtxt file from  to 10000  ms or more
-
-Once the trace is completed run the following in Terminal 3 in location face-analytics-pipeline/perfetto/linux-arm64
+* Run the analyzation
 ```
-sudo ./traceconv json ../../output/trace_file ../../output/trace_file.json
-``` 
-The command will generate a json file from the trace file obtained which can be viewed in https://ui.perfetto.dev
-
-Run the measure_trace.py with trace_file.json location as argument
-
-```
-python3 measure_trace.py ./output/trace_file.json 
+    <path_to_streamline>/bin/<os>/streamline -report -per_core --all capture.apc -o output_dir 
 ```
 
-
-
-
-
+```
+    python analyze.py output_dir
+```

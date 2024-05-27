@@ -4,3 +4,6 @@ build
 *.tgz
 onnxruntime-linux-aarch64-1.18.0
 perfetto
+build-native-gcc-rel
+gator
+
