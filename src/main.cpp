@@ -1,20 +1,23 @@
+
+#include "main.h"
+#include "utils.h"
+#include "yolov8Predictor.h"
+
 #include <regex>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <ctime>
-#include "utils.h"
-#include "yolov8Predictor.h"
+
 
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <string>
 
 
 
 
 
-int main(int argc, char *argv[])
+int run (int argc, char *argv[])
 {
 
     float confThreshold = 0.4f;
@@ -25,7 +28,6 @@ int main(int argc, char *argv[])
     
     bool isGPU    = false;
 
-    // model path to be loaded
     const std::string modelPath      = "./models/yolov8n-face-lindevs.onnx";
 
 
@@ -51,21 +53,25 @@ int main(int argc, char *argv[])
     }
  
     assert(argc==2);
+    
   
-    // input path to get frames
 
     cv::VideoCapture cap("./Input/test_video_2.mp4");
 
     if (!cap.isOpened())
     {
-        std::cerr << "Error: Cannot open webcam." << std::endl;
+        std::cerr << "Error: Cannot open video." << std::endl;
         return -1;
     }
     cv::Mat frame; 
     int frame_count = 0;
+    int MAX_FRAMES= std::stoi(argv[1]);
     while (true)
     {
-        if(frame_count>=std::stoi(argv[1])|| frame.empty()){
+        // printf("frame count : %d\n",frame_count);
+
+        if(frame_count>=MAX_FRAMES){
+            printf("No fo frames computed : %d\n",frame_count);
             break;
         }
         
@@ -79,6 +85,7 @@ int main(int argc, char *argv[])
         {
             cv::Mat image = frame.clone();
             std::vector<Yolov8Result> result = predictor.predict(image);
+           
         }
         catch (const std::exception &e)
         {
@@ -93,5 +100,15 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+
+int main(int argc, char *argv[]) {
+  InitializePerfetto();
+  Observer observer;
+  observer.WaitForTracingStart();
+  int status =  run(argc,argv);
+  perfetto::TrackEvent::Flush();
+
+  return status;
+}
 
 

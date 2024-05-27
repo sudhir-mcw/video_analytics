@@ -5,7 +5,6 @@
 
 #include "utils.h"
 
-
 class YOLOPredictor
 {
 public:
@@ -27,7 +26,7 @@ private:
     void preprocessing(cv::Mat &image, float *&blob, std::vector<int64_t> &inputTensorShape);
     std::vector<Yolov8Result> postprocessing(const cv::Size &resizedImageShape,
                                              const cv::Size &originalImageShape,
-                                             std::vector<Ort::Value> &outputTensors,cv::Mat & image);
+                                             std::vector<Ort::Value> &outputTensors,cv::Mat &image);
 
     static void getBestClassInfo(std::vector<float>::iterator it,
                                  float &bestConf,
@@ -50,4 +49,3 @@ private:
     bool hasMask = false;
     float maskThreshold = 0.5f;
 };
-

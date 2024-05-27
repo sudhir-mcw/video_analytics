@@ -1,4 +1,6 @@
 #pragma once
+#include "trace_categories.h"
+
 
 #include <chrono>
 #include <condition_variable>
@@ -6,7 +8,9 @@
 #include <thread>
 
 
+
 void InitializePerfetto();
+
 
 
 class Observer : public perfetto::TrackEventSessionObserver {

@@ -1,6 +1,26 @@
+
+
+#include "main.h"
+
+
 #include "utils.h"
 #include <sys/sysinfo.h>
-#include<ctime>
+
+
+
+
+void InitializePerfetto() {
+  perfetto::TracingInitArgs args;
+  // The backends determine where trace events are recorded. For this example we
+  // are going to use the system-wide tracing service, so that we can see our
+  // app's events in context with system profiling information.
+  args.backends = perfetto::kSystemBackend;
+  args.enable_system_consumer = false;
+
+  perfetto::Tracing::Initialize(args);
+  perfetto::TrackEvent::Register();
+}
+
 
 
 size_t utils::vectorProduct(const std::vector<int64_t> &vector)
@@ -59,7 +79,7 @@ std::vector<std::string> utils::loadNames(const std::string &path)
 void utils::visualizeDetection(cv::Mat &im, std::vector<Yolov8Result> &results,
                                const std::vector<std::string> &classNames)
 {
-    cv::Mat outimage = im.clone();
+    cv::Mat image = im.clone();
     for (const Yolov8Result &result : results)
     {
 
@@ -72,17 +92,16 @@ void utils::visualizeDetection(cv::Mat &im, std::vector<Yolov8Result> &results,
 
         int baseline = 0;
         cv::Size size = cv::getTextSize(label, cv::FONT_ITALIC, 0.4, 1, &baseline);
-        outimage(result.box).setTo(colors[classId + classNames.size()], result.boxMask);
-        cv::rectangle(outimage, result.box, colors[classId], 2);
-        cv::rectangle(outimage,
+        image(result.box).setTo(colors[classId + classNames.size()], result.boxMask);
+        cv::rectangle(image, result.box, colors[classId], 2);
+        cv::rectangle(image,
                       cv::Point(x, y), cv::Point(x + size.width, y + 12),
                       colors[classId], -1);
-        cv::putText(outimage, label,
+        cv::putText(image, label,
                     cv::Point(x, y - 3 + 12), cv::FONT_ITALIC,
                     0.4, cv::Scalar(0, 0, 0), 1);
     }
-    cv::addWeighted(im, 0.4, outimage, 0.6, 0, im);
-
+    cv::addWeighted(im, 0.4, image, 0.6, 0, im);
 }
 
 void utils::letterbox(const cv::Mat &image, cv::Mat &outImage,
@@ -168,3 +187,4 @@ T utils::clip(const T &n, const T &lower, const T &upper)
 {
     return std::max(lower, std::min(n, upper));
 }
+

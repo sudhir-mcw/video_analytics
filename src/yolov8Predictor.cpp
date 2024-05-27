@@ -1,6 +1,6 @@
 #include "yolov8Predictor.h"
-#include <ctime>
-#include <omp.h>
+#include  "main.h"
+
 
 YOLOPredictor::YOLOPredictor(const std::string &modelPath,
                              const bool &isGPU,
@@ -8,6 +8,7 @@ YOLOPredictor::YOLOPredictor(const std::string &modelPath,
                              float iouThreshold,
                              float maskThreshold)
 {
+    TRACE_EVENT("rendering", " predictor contructor");
     this->confThreshold = confThreshold;
     this->iouThreshold = iouThreshold;
     this->maskThreshold = maskThreshold;
@@ -86,7 +87,7 @@ YOLOPredictor::YOLOPredictor(const std::string &modelPath,
                 classNums = outputTensorShape[1] - 4 - 32;
         }
     }
-
+  
 }
 
 void YOLOPredictor::getBestClassInfo(std::vector<float>::iterator it,
@@ -94,15 +95,17 @@ void YOLOPredictor::getBestClassInfo(std::vector<float>::iterator it,
                                      int &bestClassId,
                                      const int _classNums)
 {
-  
+
+    // first 4 element are box
     bestClassId = 4;
     bestConf = 0;
+
     for (int i = 4; i < _classNums + 4; i++)
     {
         if (it[i] > bestConf)
         {
             bestConf = it[i];
-            bestClassId = 0;
+            bestClassId = i - 4;
         }
     }
 }
@@ -124,59 +127,40 @@ cv::Mat YOLOPredictor::getMask(const cv::Mat &maskProposals,
 
 void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int64_t> &inputTensorShape)
 {
-clock_t preproceestartTime, preproceeendTime;
-//clock_t postprocessingstartTime,postprocessingendTime;
-    
-    preproceestartTime = clock();
+    TRACE_EVENT("rendering", "pre process");
+ 
     cv::Mat resizedImage, floatImage;
     cv::cvtColor(image, resizedImage, cv::COLOR_BGR2RGB);
-    clock_t letterboxStartTime = clock();
     utils::letterbox(resizedImage, resizedImage, cv::Size((int)this->inputShapes[0][2], (int)this->inputShapes[0][3]),
                      cv::Scalar(114, 114, 114), this->isDynamicInputShape,
                      false, true, 32);
-    clock_t letterboxEndTime = clock();
-    double letterTime = (double)(letterboxEndTime - letterboxStartTime) / CLOCKS_PER_SEC;
-   
 
     inputTensorShape[2] = resizedImage.rows;
     inputTensorShape[3] = resizedImage.cols;
-    resizedImage.convertTo(floatImage, CV_32F, 1.0 / 255.0);
+
+    resizedImage.convertTo(floatImage, CV_32FC3, 1 / 255.0);
     blob = new float[floatImage.cols * floatImage.rows * floatImage.channels()];
     cv::Size floatImageSize{floatImage.cols, floatImage.rows};
-    // printf("lettertiming : %lf\n",letterTime);
+
     // hwc -> chw
     std::vector<cv::Mat> chw(floatImage.channels());
-    
-    
     for (int i = 0; i < floatImage.channels(); ++i)
     {
         chw[i] = cv::Mat(floatImageSize, CV_32FC1, blob + i * floatImageSize.width * floatImageSize.height);
     }
     cv::split(floatImage, chw);
-    preproceeendTime = clock();
-    double time = (double)(preproceeendTime - preproceestartTime) / CLOCKS_PER_SEC;
-    printf("Time for pre processing : %lf\n" , (time) );
 }
-
-
 
 std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedImageShape,
                                                         const cv::Size &originalImageShape,
-                                                        std::vector<Ort::Value> &outputTensors,cv::Mat &image)
+                                                        std::vector<Ort::Value> &outputTensors,cv::Mat& image)
 {
-    clock_t postprocessingstartTime,postprocessingendTime; 
-
-  
-
-    postprocessingstartTime = clock();
-
+    TRACE_EVENT("rendering", "post process");
+    std::string classNamesPath = "./models/coco.names";
+    const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
     std::vector<cv::Rect> boxes;
     std::vector<float> confs;
     std::vector<int> classIds;
-
-    const std::string classNamesPath = "./models/face.names";
-    const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
-   
 
     float *boxOutput = outputTensors[0].GetTensorMutableData<float>();
     //[1,4+n,8400]=>[1,8400,4+n] or [1,4+n+32,8400]=>[1,8400,4+n+32]
@@ -184,15 +168,14 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
     float *output0ptr = (float *)output0.data;
     int rows = (int)this->outputShapes[0][2];
     int cols = (int)this->outputShapes[0][1];
-    // if hasMask
     std::vector<std::vector<float>> picked_proposals;
     cv::Mat mask_protos;
-    
+
     for (int i = 0; i < rows; i++)
     {
         std::vector<float> it(output0ptr + i * cols, output0ptr + (i + 1) * cols);
-        float confidence=0;
-        int classId = 4;
+        float confidence;
+        int classId;
         this->getBestClassInfo(it.begin(), confidence, classId, classNums);
 
         if (confidence > this->confThreshold)
@@ -239,26 +222,17 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
         res.classId = classIds[idx];
         results.emplace_back(res);
     }
-    utils::visualizeDetection(image,results,classNames);
-    postprocessingendTime=clock();
-    double time = (double)(postprocessingendTime - postprocessingstartTime) / CLOCKS_PER_SEC;
-    printf ("Time for post processing : %lf\n",(time) );
+   utils::visualizeDetection(image, results, classNames); 
     return results;
-}
-
-
-
-void performNMS(const std::vector<cv::Rect> &boxes, const std::vector<float> &confs, float confThreshold, float iouThreshold, std::vector<int> &indices) {
-    cv::dnn::NMSBoxes(boxes, confs, confThreshold, iouThreshold, indices);
 }
 
 std::vector<Yolov8Result> YOLOPredictor::predict(cv::Mat &image)
 {
+    TRACE_EVENT("rendering", "predict");
     float *blob = nullptr;
     std::vector<int64_t> inputTensorShape{1, 3, -1, -1};
     this->preprocessing(image, blob, inputTensorShape);
-   
-   
+    
     size_t inputTensorSize = utils::vectorProduct(inputTensorShape);
 
     std::vector<float> inputTensorValues(blob, blob + inputTensorSize);
@@ -267,28 +241,23 @@ std::vector<Yolov8Result> YOLOPredictor::predict(cv::Mat &image)
 
     Ort::MemoryInfo memoryInfo = Ort::MemoryInfo::CreateCpu(
         OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
-    
 
     inputTensors.push_back(Ort::Value::CreateTensor<float>(
         memoryInfo, inputTensorValues.data(), inputTensorSize,
         inputTensorShape.data(), inputTensorShape.size()));
-    
-
+   
     std::vector<Ort::Value> outputTensors = this->session.Run(Ort::RunOptions{nullptr},
                                                               this->inputNames.data(),
                                                               inputTensors.data(),
                                                               1,
                                                               this->outputNames.data(),
                                                               this->outputNames.size());
-
-
     cv::Size resizedShape = cv::Size((int)inputTensorShape[3], (int)inputTensorShape[2]);
     std::vector<Yolov8Result> result = this->postprocessing(resizedShape,
                                                             image.size(),
                                                             outputTensors,image);
+  
     delete[] blob;
 
     return result;
 }
-
-

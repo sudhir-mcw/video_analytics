@@ -3,6 +3,7 @@
 #include <fstream>
 #include <opencv2/opencv.hpp>
 
+
 struct Yolov8Result
 {
     cv::Rect box;
@@ -36,4 +37,3 @@ namespace utils
     template <typename T>
     T clip(const T &n, const T &lower, const T &upper);
 }
-
