@@ -9,20 +9,17 @@
 - CMake version 3.13+
 - Make version 4.2.1+
 
-
 ## Installation
 - Install OpenCV in system using the following command 
 ```
    sudo apt update
    sudo apt install libopencv-dev 
 ```
-
 -  Download the model file and save it in models/ folder if not present already.
 ```
 wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
 mv yolov8n-face-lindevs.onnx models
 ```
-
 Download the onnxruntime from the releases or use the command inside source of the repo 
 ```
 wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-aarch64-1.18.0.tgz
@@ -30,8 +27,19 @@ wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxrunt
 tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
 
+
+- To download streamline UI, visit armDeveloper website (https://developer.arm.com/Tools%20and%20Software/Streamline%20Performance%20Analyzer) and download the ARM Perfomance Studio which matches the host system OS and install it. 
+
+# Build and Run in Linux
+- Clone the repo and switch to cpp_streamline
+```
+    git clone https://github.com/sudhir-mcw/video_analytics.git
+    cd  video_analytics
+    git checkout cpp_streamline
+```
 - Download the streamline gator agent and build the linux gator agent
 ```
+cd  video_analytics
 git clone https://github.com/ARM-software/gator.git
 cd gator
 chmod +x ./build-linux.sh
@@ -42,28 +50,12 @@ Followed by that build the libstreamline_annotate.so files
 cd gator/annotate
 make 
 ```
-The above command will create a build-native-gcc-rel folder will **gatord** binaries.
-
-
-- To download streamline UI, visit armDeveloper website (https://developer.arm.com/Tools%20and%20Software/Streamline%20Performance%20Analyzer) and download the ARM Perfomance Studio which matches the host system OS and install it. 
-
-
-
-# Build and Run in Linux
-
-- Clone the repo and switch to cpp_streamline
-```
-    git clone https://github.com/sudhir-mcw/face-analytics-pipeline.git
-    cd face-analytics-pipeline
-    git checkout cpp_streamline
-```
+The above command will create a build-native-gcc-rel folder with **gatord** binaries.
 - Build the project using 
 ```
     sh build.sh
 ``` 
-
 - To run the project  
-
 Run the gator agent using any one method 1 or 2 in terminal 1 
 *  Setup remote target machine in which the target device will stream data back to host machine which has streamline agent
 ```
@@ -85,7 +77,6 @@ Example: to limit the no of frames from the video
 ```
     sh run.sh 50 
 ```
-
 * Run the analyzation
 ```
     <path_to_streamline>/bin/<os>/streamline -report -per_core --all capture.apc -o output_dir 
