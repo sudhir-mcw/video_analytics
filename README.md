@@ -3,10 +3,6 @@
 **C++ YOLOv8 ONNXRuntime** inference code for *Object Detection* 
 
 
-
-
-
-
 ## Prequisites:
 - OpenCV 4
 - ONNXRuntime 
@@ -35,11 +31,10 @@ tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 
 # Build and Run in Linux
 
-- Clone the repo and switch to cpp_deafult_timer
+- Clone the repo 
 ```
-    git clone https://github.com/sudhir-mcw/face-analytics-pipeline.git
-    cd face-analytics-pipeline
-    git checkout cpp_default_timer
+    git clone https://github.com/sudhir-mcw/video_analytics.git
+    cd video_analytics
 ```
 - Build the project using 
 ```
@@ -48,13 +43,9 @@ tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 - To run the project use
 ```
     rm output.log
-    sh run.sh <no_of_frames> | tee -a output.log
+    sh run.sh <no_of_frames> 
 ```
 Example: to limit the no of frames from the video 
 ```
     sh run.sh 100 
-```
-- To calculate the average of pre and post process timings run
-```
-    python3 measure_time.py
 ```

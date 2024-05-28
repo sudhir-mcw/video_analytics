@@ -8,6 +8,7 @@ YOLOPredictor::YOLOPredictor(const std::string &modelPath,
                              float iouThreshold,
                              float maskThreshold)
 {
+    // load model with onnxruntime and initialize instance variables
     this->confThreshold = confThreshold;
     this->iouThreshold = iouThreshold;
     this->maskThreshold = maskThreshold;
@@ -93,8 +94,8 @@ void YOLOPredictor::getBestClassInfo(std::vector<float>::iterator it,
                                      float &bestConf,
                                      int &bestClassId,
                                      const int _classNums)
-{
-  
+{   
+    
     bestClassId = 4;
     bestConf = 0;
     for (int i = 4; i < _classNums + 4; i++)
@@ -124,38 +125,27 @@ cv::Mat YOLOPredictor::getMask(const cv::Mat &maskProposals,
 
 void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int64_t> &inputTensorShape)
 {
-clock_t preproceestartTime, preproceeendTime;
-//clock_t postprocessingstartTime,postprocessingendTime;
     
-    preproceestartTime = clock();
     cv::Mat resizedImage, floatImage;
+   
     cv::cvtColor(image, resizedImage, cv::COLOR_BGR2RGB);
-    clock_t letterboxStartTime = clock();
+    // resize the image add padding for letterbox
     utils::letterbox(resizedImage, resizedImage, cv::Size((int)this->inputShapes[0][2], (int)this->inputShapes[0][3]),
                      cv::Scalar(114, 114, 114), this->isDynamicInputShape,
                      false, true, 32);
-    clock_t letterboxEndTime = clock();
-    double letterTime = (double)(letterboxEndTime - letterboxStartTime) / CLOCKS_PER_SEC;
-   
 
     inputTensorShape[2] = resizedImage.rows;
     inputTensorShape[3] = resizedImage.cols;
     resizedImage.convertTo(floatImage, CV_32F, 1.0 / 255.0);
     blob = new float[floatImage.cols * floatImage.rows * floatImage.channels()];
     cv::Size floatImageSize{floatImage.cols, floatImage.rows};
-    // printf("lettertiming : %lf\n",letterTime);
     // hwc -> chw
     std::vector<cv::Mat> chw(floatImage.channels());
-    
-    
     for (int i = 0; i < floatImage.channels(); ++i)
     {
         chw[i] = cv::Mat(floatImageSize, CV_32FC1, blob + i * floatImageSize.width * floatImageSize.height);
     }
     cv::split(floatImage, chw);
-    preproceeendTime = clock();
-    double time = (double)(preproceeendTime - preproceestartTime) / CLOCKS_PER_SEC;
-    printf("Time for pre processing : %lf\n" , (time) );
 }
 
 
@@ -164,16 +154,12 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
                                                         const cv::Size &originalImageShape,
                                                         std::vector<Ort::Value> &outputTensors,cv::Mat &image)
 {
-    clock_t postprocessingstartTime,postprocessingendTime; 
-
-  
-
-    postprocessingstartTime = clock();
 
     std::vector<cv::Rect> boxes;
     std::vector<float> confs;
     std::vector<int> classIds;
 
+    //loading class names
     const std::string classNamesPath = "./models/face.names";
     const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
    
@@ -239,10 +225,9 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
         res.classId = classIds[idx];
         results.emplace_back(res);
     }
+
+    // draw  predicted detections to the image
     utils::visualizeDetection(image,results,classNames);
-    postprocessingendTime=clock();
-    double time = (double)(postprocessingendTime - postprocessingstartTime) / CLOCKS_PER_SEC;
-    printf ("Time for post processing : %lf\n",(time) );
     return results;
 }
 

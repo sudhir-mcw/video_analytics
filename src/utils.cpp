@@ -7,7 +7,6 @@ size_t utils::vectorProduct(const std::vector<int64_t> &vector)
 {
     if (vector.empty())
         return 0;
-
     size_t product = 1;
     for (const auto &element : vector)
         product *= element;
@@ -59,6 +58,7 @@ std::vector<std::string> utils::loadNames(const std::string &path)
 void utils::visualizeDetection(cv::Mat &im, std::vector<Yolov8Result> &results,
                                const std::vector<std::string> &classNames)
 {
+    // draw boxes, add labels and weights to image for visualization
     cv::Mat outimage = im.clone();
     for (const Yolov8Result &result : results)
     {
