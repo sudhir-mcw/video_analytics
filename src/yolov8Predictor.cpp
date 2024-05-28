@@ -155,7 +155,7 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
     std::vector<cv::Rect> boxes;
     std::vector<float> confs;
     std::vector<int> classIds;
-    const std::string classNamesPath = "./models/face.names";
+    const std::string classNamesPath = "./face.names";
     const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
 
     float *boxOutput = outputTensors[0].GetTensorMutableData<float>();

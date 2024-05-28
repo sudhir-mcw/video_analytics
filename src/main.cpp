@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     const std::string modelPath      = "./models/yolov8n-face-lindevs.onnx";
     if (!std::filesystem::exists(modelPath))
     {
+        std::cout << "Model file not found"<<std::endl;
         return -1;
     }
     YOLOPredictor predictor{nullptr};

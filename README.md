@@ -12,24 +12,25 @@
    sudo apt update
    sudo apt install libopencv-dev 
 ```
--  Download the model file and save it in models/ folder if not present already.
-```
-wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
-mv yolov8n-face-lindevs.onnx models
-```
-- Download the onnxruntime from the releases or use the command inside source of the repo 
-```
-wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-aarch64-1.18.0.tgz
-
-tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
-```
-
 # Build and Run in Linux
 - Clone the repo and switch to cpp_deafult_timer
 ```
     git clone https://github.com/sudhir-mcw/video_analytics.git
     cd  video_analytics
     git checkout cpp_default_timer
+```
+-  Download the model file and save it in models/ folder if not present already.
+```
+cd video_analytics
+wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
+mkdir models
+mv yolov8n-face-lindevs.onnx models
+```
+- Download the onnxruntime from the releases or use the command inside the repo 
+```
+cd video_analytics
+wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-aarch64-1.18.0.tgz
+tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
 - Build the project using 
 ```
