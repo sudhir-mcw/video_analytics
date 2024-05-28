@@ -1,17 +1,11 @@
 #pragma once
-#include "trace_categories.h"
-
-
 #include <chrono>
 #include <condition_variable>
 #include <fstream>
 #include <thread>
-
-
+#include "trace_categories.h"
 
 void InitializePerfetto();
-
-
 
 class Observer : public perfetto::TrackEventSessionObserver {
  public:

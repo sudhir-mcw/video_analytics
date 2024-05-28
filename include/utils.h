@@ -2,8 +2,6 @@
 #include <codecvt>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-
-
 struct Yolov8Result
 {
     cv::Rect box;
@@ -11,7 +9,6 @@ struct Yolov8Result
     float conf{};
     int classId{};
 };
-
 namespace utils
 {
     static std::vector<cv::Scalar> colors;

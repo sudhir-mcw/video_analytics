@@ -1,13 +1,7 @@
-
-
-#include "main.h"
-
-
-#include "utils.h"
 #include <sys/sysinfo.h>
 
-
-
+#include "main.h"
+#include "utils.h"
 
 void InitializePerfetto() {
   perfetto::TracingInitArgs args;
@@ -16,33 +10,24 @@ void InitializePerfetto() {
   // app's events in context with system profiling information.
   args.backends = perfetto::kSystemBackend;
   args.enable_system_consumer = false;
-
   perfetto::Tracing::Initialize(args);
   perfetto::TrackEvent::Register();
 }
-
-
-
 size_t utils::vectorProduct(const std::vector<int64_t> &vector)
 {
     if (vector.empty())
         return 0;
-
     size_t product = 1;
     for (const auto &element : vector)
         product *= element;
-
     return product;
 }
-
 std::wstring utils::charToWstring(const char *str)
 {
     typedef std::codecvt_utf8<wchar_t> convert_type;
     std::wstring_convert<convert_type, wchar_t> converter;
-
     return converter.from_bytes(str);
 }
-
 std::vector<std::string> utils::loadNames(const std::string &path)
 {
     // load class names
@@ -65,7 +50,6 @@ std::vector<std::string> utils::loadNames(const std::string &path)
     }
     // set color
     srand(time(0));
-
     for (int i = 0; i < 2 * classNames.size(); i++)
     {
         int b = rand() % 256;
@@ -75,7 +59,6 @@ std::vector<std::string> utils::loadNames(const std::string &path)
     }
     return classNames;
 }
-
 void utils::visualizeDetection(cv::Mat &im, std::vector<Yolov8Result> &results,
                                const std::vector<std::string> &classNames)
 {
@@ -103,7 +86,6 @@ void utils::visualizeDetection(cv::Mat &im, std::vector<Yolov8Result> &results,
     }
     cv::addWeighted(im, 0.4, image, 0.6, 0, im);
 }
-
 void utils::letterbox(const cv::Mat &image, cv::Mat &outImage,
                       const cv::Size &newShape = cv::Size(640, 640),
                       const cv::Scalar &color = cv::Scalar(114, 114, 114),
@@ -139,22 +121,18 @@ void utils::letterbox(const cv::Mat &image, cv::Mat &outImage,
         ratio[0] = (float)newShape.width / (float)shape.width;
         ratio[1] = (float)newShape.height / (float)shape.height;
     }
-
     dw /= 2.0f;
     dh /= 2.0f;
-
     if (shape.width != newUnpad[0] && shape.height != newUnpad[1])
     {
         cv::resize(image, outImage, cv::Size(newUnpad[0], newUnpad[1]));
     }
-
     int top = int(std::round(dh - 0.1f));
     int bottom = int(std::round(dh + 0.1f));
     int left = int(std::round(dw - 0.1f));
     int right = int(std::round(dw + 0.1f));
     cv::copyMakeBorder(outImage, outImage, top, bottom, left, right, cv::BORDER_CONSTANT, color);
 }
-
 void utils::scaleCoords(cv::Rect &coords,
                         cv::Mat &mask,
                         const float maskThreshold,
