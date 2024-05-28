@@ -160,7 +160,7 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
     std::vector<int> classIds;
 
     //loading class names
-    const std::string classNamesPath = "./models/face.names";
+    const std::string classNamesPath = "./face.names";
     const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
    
 
