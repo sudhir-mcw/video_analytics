@@ -143,7 +143,7 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
                                                         std::vector<Ort::Value> &outputTensors,cv::Mat& image)
 {
     TRACE_EVENT("rendering", "post process");
-    std::string classNamesPath = "./models/coco.names";
+    std::string classNamesPath = "./face.names";
     const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
     std::vector<cv::Rect> boxes;
     std::vector<float> confs;

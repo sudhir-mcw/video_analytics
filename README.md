@@ -15,19 +15,29 @@
    sudo apt update
    sudo apt install libopencv-dev 
 ```
+# Build and Run in Linux
+- Clone the repo and switch to cpp_perfetto
+```
+    git clone https://github.com/sudhir-mcw/video_analytics.git
+    cd video_analytics
+    git checkout cpp_perfetto
+    mkdir output
+```
 -  Download the model file and save it in models/ folder if not present already.
 ```
+cd video_analytics
 wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
+mkdir models
 mv yolov8n-face-lindevs.onnx models
 ```
-Download the onnxruntime from the releases or use the command inside source of the repo 
+Download the onnxruntime from the releases or use the command inside repo 
 ```
 wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-aarch64-1.18.0.tgz
-
 tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
 - Download the perfetto binaries from the github repo 
 ```
+    cd video_analytics
     mkdir perfetto 
     cd perfetto 
     wget https://github.com/google/perfetto/releases/download/v45.0/linux-arm64.zip
@@ -36,13 +46,6 @@ tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
     chmod +x * 
 ```
 
-# Build and Run in Linux
-- Clone the repo and switch to cpp_perfetto
-```
-    git clone https://github.com/sudhir-mcw/video_analytics.git
-    cd video_analytics
-    git checkout cpp_perfetto
-```
 - Build the project using 
 ```
     sh build.sh
