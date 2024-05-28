@@ -18,6 +18,7 @@
 -  Download the model file and save it in models/ folder if not present already.
 ```
 wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
+mkdir models
 mv yolov8n-face-lindevs.onnx models
 ```
 Download the onnxruntime from the releases or use the command inside source of the repo 
@@ -28,7 +29,8 @@ tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
 
 
-- To download streamline UI, visit armDeveloper website (https://developer.arm.com/Tools%20and%20Software/Streamline%20Performance%20Analyzer) and download the ARM Perfomance Studio which matches the host system OS and install it. 
+- To download streamline UI, visit armDeveloper website (https://developer.arm.com/Tools%20and%20Software/Streamline%20Performance%20Analyzer) and download the ARM Perfomance Studio 2024.0 which matches the host system OS and install it. 
+For linux download use the link (https://artifacts.tools.arm.com/arm-performance-studio/2024.0/Arm_Performance_Studio_2024.0_linux_x86-64.tgz)
 
 # Build and Run in Linux
 - Clone the repo and switch to cpp_streamline
@@ -43,7 +45,7 @@ cd  video_analytics
 git clone https://github.com/ARM-software/gator.git
 cd gator
 chmod +x ./build-linux.sh
-./build-linux.sh    
+./build-linux.sh -l off
 ```
 Followed by that build the libstreamline_annotate.so files
 ```

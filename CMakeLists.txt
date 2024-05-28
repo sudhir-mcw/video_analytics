@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Threads)
 find_package(OpenCV REQUIRED)
-include_directories(sdk)
 include_directories(include)
 include_directories(${CMAKE_SOURCE_DIR}/gator/annotate)
 

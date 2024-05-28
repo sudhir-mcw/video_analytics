@@ -114,7 +114,7 @@ cv::Mat YOLOPredictor::getMask(const cv::Mat &maskProposals,
 }
 void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int64_t> &inputTensorShape)
 {
-    ANNOTATE_COLOR(ANNOTATE_PURPLE,"pre process");
+    ANNOTATE_COLOR(ANNOTATE_PURPLE,"pre process start");
     cv::Mat resizedImage, floatImage;
     cv::cvtColor(image, resizedImage, cv::COLOR_BGR2RGB);
     utils::letterbox(resizedImage, resizedImage, cv::Size((int)this->inputShapes[0][2], (int)this->inputShapes[0][3]),
@@ -133,7 +133,7 @@ void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int6
     }
     cv::split(floatImage, chw);
     ANNOTATE_END();
-    ANNOTATE_COLOR(ANNOTATE_PURPLE,"pre process start");
+    ANNOTATE_COLOR(ANNOTATE_PURPLE,"pre process end");
     ANNOTATE_END();
 }
 std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedImageShape,
@@ -141,7 +141,7 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
                                                         std::vector<Ort::Value> &outputTensors,cv::Mat& image)
 {
     ANNOTATE_COLOR(ANNOTATE_PURPLE,"post process start");
-    std::string classNamesPath = "./models/coco.names";
+    std::string classNamesPath = "./face.names";
     const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
     std::vector<cv::Rect> boxes;
     std::vector<float> confs;
