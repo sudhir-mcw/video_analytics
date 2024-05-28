@@ -88,13 +88,11 @@ YOLOPredictor::YOLOPredictor(const std::string &modelPath,
     }
 
 }
-
 void YOLOPredictor::getBestClassInfo(std::vector<float>::iterator it,
                                      float &bestConf,
                                      int &bestClassId,
                                      const int _classNums)
 {
-  
     bestClassId = 4;
     bestConf = 0;
     for (int i = 4; i < _classNums + 4; i++)
@@ -121,33 +119,23 @@ cv::Mat YOLOPredictor::getMask(const cv::Mat &maskProposals,
     cv::resize(dest, dest, cv::Size((int)this->inputShapes[0][2], (int)this->inputShapes[0][3]), cv::INTER_LINEAR);
     return dest;
 }
-
 void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int64_t> &inputTensorShape)
 {
-clock_t preproceestartTime, preproceeendTime;
-//clock_t postprocessingstartTime,postprocessingendTime;
-    
+    clock_t preproceestartTime, preproceeendTime;
     preproceestartTime = clock();
     cv::Mat resizedImage, floatImage;
     cv::cvtColor(image, resizedImage, cv::COLOR_BGR2RGB);
-    clock_t letterboxStartTime = clock();
     utils::letterbox(resizedImage, resizedImage, cv::Size((int)this->inputShapes[0][2], (int)this->inputShapes[0][3]),
                      cv::Scalar(114, 114, 114), this->isDynamicInputShape,
                      false, true, 32);
-    clock_t letterboxEndTime = clock();
-    double letterTime = (double)(letterboxEndTime - letterboxStartTime) / CLOCKS_PER_SEC;
-   
-
     inputTensorShape[2] = resizedImage.rows;
     inputTensorShape[3] = resizedImage.cols;
     resizedImage.convertTo(floatImage, CV_32F, 1.0 / 255.0);
     blob = new float[floatImage.cols * floatImage.rows * floatImage.channels()];
     cv::Size floatImageSize{floatImage.cols, floatImage.rows};
-    // printf("lettertiming : %lf\n",letterTime);
     // hwc -> chw
     std::vector<cv::Mat> chw(floatImage.channels());
-    
-    
+
     for (int i = 0; i < floatImage.channels(); ++i)
     {
         chw[i] = cv::Mat(floatImageSize, CV_32FC1, blob + i * floatImageSize.width * floatImageSize.height);
@@ -157,26 +145,18 @@ clock_t preproceestartTime, preproceeendTime;
     double time = (double)(preproceeendTime - preproceestartTime) / CLOCKS_PER_SEC;
     printf("Time for pre processing : %lf\n" , (time) );
 }
-
-
-
 std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedImageShape,
                                                         const cv::Size &originalImageShape,
                                                         std::vector<Ort::Value> &outputTensors,cv::Mat &image)
 {
     clock_t postprocessingstartTime,postprocessingendTime; 
-
-  
-
     postprocessingstartTime = clock();
 
     std::vector<cv::Rect> boxes;
     std::vector<float> confs;
     std::vector<int> classIds;
-
     const std::string classNamesPath = "./models/face.names";
     const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
-   
 
     float *boxOutput = outputTensors[0].GetTensorMutableData<float>();
     //[1,4+n,8400]=>[1,8400,4+n] or [1,4+n+32,8400]=>[1,8400,4+n+32]
@@ -187,14 +167,12 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
     // if hasMask
     std::vector<std::vector<float>> picked_proposals;
     cv::Mat mask_protos;
-    
     for (int i = 0; i < rows; i++)
     {
         std::vector<float> it(output0ptr + i * cols, output0ptr + (i + 1) * cols);
         float confidence=0;
         int classId = 4;
         this->getBestClassInfo(it.begin(), confidence, classId, classNums);
-
         if (confidence > this->confThreshold)
         {
             if (this->hasMask)
@@ -213,17 +191,14 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
             classIds.emplace_back(classId);
         }
     }
-
     std::vector<int> indices;
     cv::dnn::NMSBoxes(boxes, confs, this->confThreshold, this->iouThreshold, indices);
-
     if (this->hasMask)
     {
         float *maskOutput = outputTensors[1].GetTensorMutableData<float>();
         std::vector<int> mask_protos_shape = {1, (int)this->outputShapes[1][1], (int)this->outputShapes[1][2], (int)this->outputShapes[1][3]};
         mask_protos = cv::Mat(mask_protos_shape, CV_32F, maskOutput);
     }
-
     std::vector<Yolov8Result> results;
     for (int idx : indices)
     {
@@ -233,7 +208,6 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
             res.boxMask = this->getMask(cv::Mat(picked_proposals[idx]).t(), mask_protos);
         else
             res.boxMask = cv::Mat::zeros((int)this->inputShapes[0][2], (int)this->inputShapes[0][3], CV_8U);
-
         utils::scaleCoords(res.box, res.boxMask, this->maskThreshold, resizedImageShape, originalImageShape);
         res.conf = confs[idx];
         res.classId = classIds[idx];
@@ -245,49 +219,36 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
     printf ("Time for post processing : %lf\n",(time) );
     return results;
 }
-
-
-
-void performNMS(const std::vector<cv::Rect> &boxes, const std::vector<float> &confs, float confThreshold, float iouThreshold, std::vector<int> &indices) {
+void performNMS(const std::vector<cv::Rect> &boxes, const std::vector<float> &confs, float confThreshold, float iouThreshold, std::vector<int> &indices) 
+{
     cv::dnn::NMSBoxes(boxes, confs, confThreshold, iouThreshold, indices);
 }
-
 std::vector<Yolov8Result> YOLOPredictor::predict(cv::Mat &image)
 {
     float *blob = nullptr;
     std::vector<int64_t> inputTensorShape{1, 3, -1, -1};
     this->preprocessing(image, blob, inputTensorShape);
-   
-   
+
     size_t inputTensorSize = utils::vectorProduct(inputTensorShape);
-
     std::vector<float> inputTensorValues(blob, blob + inputTensorSize);
-
     std::vector<Ort::Value> inputTensors;
-
     Ort::MemoryInfo memoryInfo = Ort::MemoryInfo::CreateCpu(
         OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
-    
-
     inputTensors.push_back(Ort::Value::CreateTensor<float>(
         memoryInfo, inputTensorValues.data(), inputTensorSize,
         inputTensorShape.data(), inputTensorShape.size()));
-    
-
     std::vector<Ort::Value> outputTensors = this->session.Run(Ort::RunOptions{nullptr},
                                                               this->inputNames.data(),
                                                               inputTensors.data(),
                                                               1,
                                                               this->outputNames.data(),
                                                               this->outputNames.size());
-
-
     cv::Size resizedShape = cv::Size((int)inputTensorShape[3], (int)inputTensorShape[2]);
+
     std::vector<Yolov8Result> result = this->postprocessing(resizedShape,
                                                             image.size(),
                                                             outputTensors,image);
     delete[] blob;
-
     return result;
 }
 

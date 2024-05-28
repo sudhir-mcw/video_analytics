@@ -10,7 +10,6 @@ struct Yolov8Result
     float conf{};
     int classId{};
 };
-
 namespace utils
 {
     static std::vector<cv::Scalar> colors;
@@ -20,7 +19,6 @@ namespace utils
     std::vector<std::string> loadNames(const std::string &path);
     void visualizeDetection(cv::Mat &image, std::vector<Yolov8Result> &results,
                             const std::vector<std::string> &classNames);
-
     void letterbox(const cv::Mat &image, cv::Mat &outImage,
                    const cv::Size &newShape,
                    const cv::Scalar &color,
@@ -28,11 +26,9 @@ namespace utils
                    bool scaleFill,
                    bool scaleUp,
                    int stride);
-
     void scaleCoords(cv::Rect &coords, cv::Mat &mask,
                      const float maskThreshold,
                      const cv::Size &imageShape, const cv::Size &imageOriginalShape);
-
     template <typename T>
     T clip(const T &n, const T &lower, const T &upper);
 }
