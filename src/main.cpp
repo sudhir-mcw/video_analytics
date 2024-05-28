@@ -22,8 +22,8 @@
 
 
 int main(int argc, char *argv[]) {
-  gator_annotate_setup();
-  float confThreshold = 0.4f;
+    gator_annotate_setup();
+    float confThreshold = 0.4f;
     float iouThreshold = 0.4f;
 
     float maskThreshold = 0.5f;
@@ -71,7 +71,6 @@ int main(int argc, char *argv[]) {
     int MAX_FRAMES= std::stoi(argv[1]);
     while (true)
     {
-        // printf("frame count : %d\n",frame_count);
 
         if(frame_count>=MAX_FRAMES){
             printf("No fo frames computed : %d\n",frame_count);

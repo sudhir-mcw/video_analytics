@@ -45,6 +45,10 @@ make
 The above command will create a build-native-gcc-rel folder will **gatord** binaries.
 
 
+- To download streamline UI, visit armDeveloper website (https://developer.arm.com/Tools%20and%20Software/Streamline%20Performance%20Analyzer) and download the ARM Perfomance Studio which matches the host system OS and install it. 
+
+
+
 # Build and Run in Linux
 
 - Clone the repo and switch to cpp_streamline
@@ -86,7 +90,9 @@ Example: to limit the no of frames from the video
 ```
     <path_to_streamline>/bin/<os>/streamline -report -per_core --all capture.apc -o output_dir 
 ```
+Note: The streamline cli can be used to open terminal within the streamline folder 
 
-```
+Move the output_dir to the root of the project and run the command
+```    
     python analyze.py output_dir
 ```
