@@ -15,20 +15,6 @@
    sudo apt update
    sudo apt install libopencv-dev 
 ```
--  Download the model file and save it in models/ folder if not present already.
-```
-wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
-mkdir models
-mv yolov8n-face-lindevs.onnx models
-```
-Download the onnxruntime from the releases or use the command inside source of the repo 
-```
-wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-aarch64-1.18.0.tgz
-
-tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
-```
-
-
 - To download streamline UI, visit armDeveloper website (https://developer.arm.com/Tools%20and%20Software/Streamline%20Performance%20Analyzer) and download the ARM Perfomance Studio 2024.0 which matches the host system OS and install it. 
 For linux download use the link (https://artifacts.tools.arm.com/arm-performance-studio/2024.0/Arm_Performance_Studio_2024.0_linux_x86-64.tgz)
 
@@ -38,6 +24,18 @@ For linux download use the link (https://artifacts.tools.arm.com/arm-performance
     git clone https://github.com/sudhir-mcw/video_analytics.git
     cd  video_analytics
     git checkout cpp_streamline
+```
+-  Download the model file and save it in models/ folder if not present already.
+```
+wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
+mkdir models
+mv yolov8n-face-lindevs.onnx models
+```
+Download the onnxruntime from the releases or use the command inside source of the repo 
+```
+cd video_analytics
+wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-aarch64-1.18.0.tgz
+tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
 - Download the streamline gator agent and build the linux gator agent
 ```
