@@ -1,6 +1,6 @@
 #include "yolov8Predictor.h"
 #include <ctime>
-#include <omp.h>
+#include <chrono>
 
 YOLOPredictor::YOLOPredictor(const std::string &modelPath,
                              const bool &isGPU,
@@ -121,8 +121,7 @@ cv::Mat YOLOPredictor::getMask(const cv::Mat &maskProposals,
 }
 void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int64_t> &inputTensorShape)
 {
-    clock_t preproceestartTime, preproceeendTime;
-    preproceestartTime = clock();
+    auto preproceestartTime =  std::chrono::high_resolution_clock::now();
     cv::Mat resizedImage, floatImage;
     cv::cvtColor(image, resizedImage, cv::COLOR_BGR2RGB);
     utils::letterbox(resizedImage, resizedImage, cv::Size((int)this->inputShapes[0][2], (int)this->inputShapes[0][3]),
@@ -141,17 +140,15 @@ void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int6
         chw[i] = cv::Mat(floatImageSize, CV_32FC1, blob + i * floatImageSize.width * floatImageSize.height);
     }
     cv::split(floatImage, chw);
-    preproceeendTime = clock();
-    double time = (double)(preproceeendTime - preproceestartTime) / CLOCKS_PER_SEC;
-    printf("Time for pre processing : %lf\n" , (time) );
+    auto preproceeendTime =  std::chrono::high_resolution_clock::now();
+    auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(preproceeendTime - preproceestartTime).count();
+    printf("Time for pre processing : %ld\n" , (time) );
 }
 std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedImageShape,
                                                         const cv::Size &originalImageShape,
                                                         std::vector<Ort::Value> &outputTensors,cv::Mat &image)
 {
-    clock_t postprocessingstartTime,postprocessingendTime; 
-    postprocessingstartTime = clock();
-
+    auto postprocessingstartTime =  std::chrono::high_resolution_clock::now();
     std::vector<cv::Rect> boxes;
     std::vector<float> confs;
     std::vector<int> classIds;
@@ -214,9 +211,9 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
         results.emplace_back(res);
     }
     utils::visualizeDetection(image,results,classNames);
-    postprocessingendTime=clock();
-    double time = (double)(postprocessingendTime - postprocessingstartTime) / CLOCKS_PER_SEC;
-    printf ("Time for post processing : %lf\n",(time) );
+    auto postprocessingendTime =  std::chrono::high_resolution_clock::now();
+    auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(postprocessingendTime - postprocessingstartTime).count();
+    printf ("Time for post processing : %ld\n",(time) );
     return results;
 }
 void performNMS(const std::vector<cv::Rect> &boxes, const std::vector<float> &confs, float confThreshold, float iouThreshold, std::vector<int> &indices) 

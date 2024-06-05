@@ -1,10 +1,8 @@
-import re
-
+import sys
 preprocess_time = []
-postprocess_time = []
 post_process_time =[]
 
-fp=open('output.log','r')
+fp=open(sys.argv[1],'r')
 
 for line in fp.read().strip().split('\n'):
     if line=='':
@@ -20,5 +18,5 @@ fp.close()
 
 
 print('total entries',len(preprocess_time),len(post_process_time))
-print('preprocess',sum(preprocess_time)/len(preprocess_time))
-print('postprocess',sum(post_process_time)/len(preprocess_time))
+print('preprocess',(sum(preprocess_time)/len(preprocess_time))/(10**6),'ms')
+print('postprocess',(sum(post_process_time)/len(preprocess_time))/(10**6),'ms')
