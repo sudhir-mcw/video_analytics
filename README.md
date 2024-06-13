@@ -8,12 +8,13 @@
 - Perfetto 
 - CMake version 3.13+
 - Make version 4.2.1+
+- g++ 
 
 ## Installation
 - Install OpenCV in system using the following command 
 ```
    sudo apt update
-   sudo apt install libopencv-dev 
+   sudo apt install libopencv-dev cmake make wget g++
 ```
 # Build and Run in Linux
 - Clone the repo and switch to cpp_perfetto
@@ -85,6 +86,14 @@ Example: to limit the no of frames from the video
    sudo sh run.sh 50 
 ```
 Note: Inorder to collect the trace for 100 frames increase the duration in system_wide_trace_cfg.pbtxt file from  to 10000  ms or more
+* To limit the number of cores while running use taskset utility
+```
+    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames>
+```
+Example: to run the application on core 0 and 1
+```
+    taskset -c 0,1 ./build/yolov8_ort 50
+```
 
 Once the trace is completed run the following in Terminal 3 in location video_analytics/perfetto/linux-arm64
 ```
