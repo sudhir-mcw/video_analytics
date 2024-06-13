@@ -4,8 +4,7 @@
 
 ## Prequisites:
 - OpenCV 4
-- ONNXRuntime 
-- Perfetto 
+- ONNXRuntime  
 - CMake version 3.13+
 - Make version 4.2.1+
 
@@ -13,7 +12,7 @@
 - Install OpenCV in system using the following command 
 ```
    sudo apt update
-   sudo apt install libopencv-dev 
+   sudo apt install libopencv-dev cmake make 
 ```
 - To download streamline UI, visit armDeveloper website (https://developer.arm.com/Tools%20and%20Software/Streamline%20Performance%20Analyzer) and download the ARM Perfomance Studio 2024.0 which matches the host system OS and install it. 
 For linux download use the link (https://artifacts.tools.arm.com/arm-performance-studio/2024.0/Arm_Performance_Studio_2024.0_linux_x86-64.tgz)
@@ -76,6 +75,14 @@ Note : While running on local capture use ctrl+c to exit the capture and capture
 Example: to limit the no of frames from the video 
 ```
     sh run.sh 50 
+```
+* To limit the number of cores while running use taskset utility
+```
+    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames>
+```
+Example: to run the application on core 0 and 1
+```
+    taskset -c 0,1 ./build/yolov8_ort 50
 ```
 * Run the analyzation
 ```
