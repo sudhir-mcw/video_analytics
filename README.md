@@ -5,12 +5,16 @@
 ## Prequisites:
 - OpenCV 4
 - ONNXRuntime 
+- cmake
+- make
+- g++ compiler
+- wget
 
 ## Installation
 - Install OpenCV in system using the following command 
 ```
    sudo apt update
-   sudo apt install libopencv-dev 
+   sudo apt install libopencv-dev cmake make g++ wget
 ```
 # Build and Run in Linux
 - Clone the repo and switch to cpp_deafult_timer
@@ -49,6 +53,14 @@ run the application and log metrics
 Example: to limit the no of frames from the video
 ```
     sh run.sh 100 | tee -a output.log
+```
+* To limit the number of cores while running use taskset utility
+```
+    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames>  | tee -a output.log
+```
+Example: to run the application on core 0 and 1
+```
+    taskset -c 0,1 ./build/yolov8_ort 50  | tee -a output.log
 ```
 - To calculate the average of pre and post process timings run
 ```
