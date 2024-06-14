@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     const std::string modelPath      = "./models/yolov8n-face-lindevs.onnx";
     if (!std::filesystem::exists(modelPath))
     {
+        std::cerr << "Error: Model file does not exist." << std::endl;
         return -1;
     }
     YOLOPredictor predictor{nullptr};
@@ -35,11 +36,11 @@ int main(int argc, char *argv[])
         std::cerr << "unable to load model" << e.what() << std::endl;
         return -1;
     }
-    //  check for no of frames as cmdline args
-    assert(argc==2);
-
+    //  check for no of frames,input video path as cmdline args
+    assert(argc==3);
     // input path to get frames
-    cv::VideoCapture cap("./input/test_video_2.mp4");
+    std::string input_path = argv[2];
+    cv::VideoCapture cap(input_path);
     if (!cap.isOpened())
     {
         std::cerr << "Error: Cannot open video file." << std::endl;
