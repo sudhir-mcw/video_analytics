@@ -70,27 +70,27 @@ Note : While running on local capture use ctrl+c to exit the capture and capture
 
 * Run the application in terminal 2
 ```
-    sh run <no_of_frames>
+    sh run.sh <no_of_frames> <input_video_path> 
 ```
 Example: to limit the no of frames from the video 
 ```
-    sh run.sh 50 
+   sh run.sh 100 ./input/test_video_2.mp4
 ```
 * To limit the number of cores while running use taskset utility
 ```
-    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames>
+    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames> <input_video_path> 
 ```
 Example: to run the application on core 0 and 1
 ```
-    taskset -c 0,1 ./build/yolov8_ort 50
+    taskset -c 0,1 ./build/yolov8_ort 50 ./input/test_video_2.mp4
 ```
 * Run the analyzation
 ```
-    <path_to_streamline>/bin/<os>/streamline -report -per_core --all capture.apc -o output_dir 
+    <path_to_streamline>/bin/<os>/streamline -report -per_core --log --timeline capture.apc -o <output_dir> 
 ```
 Note: The streamline cli can be used to open terminal within the streamline folder 
 
-Move the output_dir to the root of the project and run the command
+Move the <output_dir> to the root of the project and run the command
 ```    
-    python analyze.py output_dir
+    python analyze.py <output_dir>
 ```

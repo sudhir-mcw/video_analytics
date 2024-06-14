@@ -15,7 +15,7 @@ add_executable(yolov8_ort
                src/main.cpp
                )
                
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-g")
 target_include_directories(yolov8_ort PRIVATE ${CMAKE_SOURCE_DIR}/onnxruntime-linux-aarch64-1.18.0/include)
 target_compile_features(yolov8_ort PRIVATE cxx_std_17)
 target_link_libraries(yolov8_ort ${CMAKE_SOURCE_DIR}/onnxruntime-linux-aarch64-1.18.0/lib/libonnxruntime.so ${CMAKE_SOURCE_DIR}/gator/annotate/libstreamline_annotate.so  ${OpenCV_LIBS} pthread)
