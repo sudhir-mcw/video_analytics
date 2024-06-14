@@ -79,20 +79,20 @@ Once you see enabled ftrace in the Terminal 2 window run the command
 Terminal 4 
 ```
    cd video_analytics
-   sudo  sh run.sh <no_of_frames> 
+   sudo  sh run.sh <no_of_frames> <input_video_path>
 ```
 Example: to limit the no of frames from the video 
 ```
-   sudo sh run.sh 50 
+   sudo sh run.sh 50 ./input/test_video_2.mp4
 ```
 Note: Inorder to collect the trace for 100 frames increase the duration in system_wide_trace_cfg.pbtxt file from  to 10000  ms or more
 * To limit the number of cores while running use taskset utility
 ```
-    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames>
+    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames> <input_video_path>
 ```
 Example: to run the application on core 0 and 1
 ```
-    taskset -c 0,1 ./build/yolov8_ort 50
+    taskset -c 0,1 ./build/yolov8_ort 50 ./input/test_video_2.mp4
 ```
 
 Once the trace is completed run the following in Terminal 3 in location video_analytics/perfetto/linux-arm64
