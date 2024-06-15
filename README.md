@@ -44,25 +44,25 @@ tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 
 Clear the exisisting logs
 ```
-    rm output.log
+    rm *.log
 ```
 run the application and log metrics
 ```
-    sh run.sh <no_of_frames> | tee -a output.log
+    sh run.sh <no_of_frames> <input_video_path> | tee -a output.log
 ```
 Example: to limit the no of frames from the video
 ```
-    sh run.sh 100 | tee -a output.log
+    sh run.sh 100 ./input/test_video_2.mp4 | tee -a output.log
 ```
 * To limit the number of cores while running use taskset utility
 ```
-    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames>  | tee -a output.log
+    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames> <input_video_path>  | tee -a output.log
 ```
 Example: to run the application on core 0 and 1
 ```
-    taskset -c 0,1 ./build/yolov8_ort 50  | tee -a output.log
+    taskset -c 0,1 ./build/yolov8_ort 50 ./input/test_video_2.mp4 | tee -a output.log
 ```
 - To calculate the average of pre and post process timings run
 ```
-    python3 measure_time.py
+    python3 measure_time.py output.log
 ```

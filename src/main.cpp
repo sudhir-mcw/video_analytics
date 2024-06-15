@@ -36,20 +36,22 @@ int main(int argc, char *argv[])
         std::cerr << "unable to load model " << e.what() << std::endl;
         return -1;
     }
-    //  check for no of frames as cmdline args
-    assert(argc==2);
+    //  check for no of frames, input path as cmdline args
+    assert(argc==3);
     // input path to get frames
-    cv::VideoCapture cap("./input/test_video_2.mp4");
+    std::string videoPath = argv[2];
+    cv::VideoCapture cap(videoPath);
     if (!cap.isOpened())
     {
         std::cerr << "Error: Cannot open webcam." << std::endl;
         return -1;
     }
     cv::Mat frame; 
-    int frame_count = 0;
+    int frameCount = 0;
     while (true)
     {
-        if(frame_count>=std::stoi(argv[1])){
+        if(frameCount>=std::stoi(argv[1])){
+            std::cout<<"Frames processed: "<<frameCount<<std::endl;
             break;
         }
         cap >> frame;
@@ -68,7 +70,7 @@ int main(int argc, char *argv[])
             std::cerr << e.what() << std::endl;
             break;
         }
-        frame_count+=1;  
+        frameCount+=1;  
     }
     cap.release();
     return 0;

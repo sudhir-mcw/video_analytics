@@ -12,7 +12,7 @@ add_executable(yolov8_ort
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_RELEASE "-g")
 
 
 target_include_directories(yolov8_ort PRIVATE ${CMAKE_SOURCE_DIR}/onnxruntime-linux-aarch64-1.18.0/include)

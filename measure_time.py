@@ -19,4 +19,4 @@ fp.close()
 
 print('total entries',len(preprocess_time),len(post_process_time))
 print('preprocess',(sum(preprocess_time)/len(preprocess_time))/(10**6),'ms')
-print('postprocess',(sum(post_process_time)/len(preprocess_time))/(10**6),'ms')
+print('postprocess',(sum(post_process_time)/len(post_process_time))/(10**6),'ms')
