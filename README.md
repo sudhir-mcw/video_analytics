@@ -44,6 +44,8 @@ cd gator
 chmod +x ./build-linux.sh
 ./build-linux.sh -l off
 ```
+Note: If the  installed version of ARM perfomance studio is 2024.1, copy the gator folder from host machine it can be found <path_to_ArmPerfomanceStudio_installation_directory>/streamline to the target and place it inside root of the project and build it usig the steps given above.
+
 Followed by that build the libstreamline_annotate.so files
 ```
 cd gator/annotate
@@ -86,7 +88,7 @@ Example: to run the application on core 0 and 1
 ```
 * Run the analyzation
 ```
-    <path_to_streamline>/bin/<os>/streamline -report -per_core --log --timeline capture.apc -o <output_dir> 
+    <path_to_ARMPerfomanceStudio_install_director>/streamline/bin/<os>/streamline -report -per_core --log --timeline capture.apc -o <output_dir> 
 ```
 Note: The streamline cli can be used to open terminal within the streamline folder 
 
