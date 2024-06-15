@@ -1,7 +1,5 @@
 #include "utils.h"
 #include <sys/sysinfo.h>
-#include<ctime>
-
 
 size_t utils::vectorProduct(const std::vector<int64_t> &vector)
 {
@@ -13,7 +11,6 @@ size_t utils::vectorProduct(const std::vector<int64_t> &vector)
 
     return product;
 }
-
 std::wstring utils::charToWstring(const char *str)
 {
     typedef std::codecvt_utf8<wchar_t> convert_type;
@@ -21,7 +18,6 @@ std::wstring utils::charToWstring(const char *str)
 
     return converter.from_bytes(str);
 }
-
 std::vector<std::string> utils::loadNames(const std::string &path)
 {
     // load class names
@@ -54,7 +50,6 @@ std::vector<std::string> utils::loadNames(const std::string &path)
     }
     return classNames;
 }
-
 void utils::visualizeDetection(cv::Mat &im, std::vector<Yolov8Result> &results,
                                const std::vector<std::string> &classNames)
 {
@@ -84,7 +79,6 @@ void utils::visualizeDetection(cv::Mat &im, std::vector<Yolov8Result> &results,
     cv::addWeighted(im, 0.4, outimage, 0.6, 0, im);
 
 }
-
 void utils::letterbox(const cv::Mat &image, cv::Mat &outImage,
                       const cv::Size &newShape = cv::Size(640, 640),
                       const cv::Scalar &color = cv::Scalar(114, 114, 114),
@@ -135,7 +129,6 @@ void utils::letterbox(const cv::Mat &image, cv::Mat &outImage,
     int right = int(std::round(dw + 0.1f));
     cv::copyMakeBorder(outImage, outImage, top, bottom, left, right, cv::BORDER_CONSTANT, color);
 }
-
 void utils::scaleCoords(cv::Rect &coords,
                         cv::Mat &mask,
                         const float maskThreshold,
