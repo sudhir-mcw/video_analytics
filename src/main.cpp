@@ -37,8 +37,8 @@ int run (int argc, char *argv[])
     //  check for no of frames,input video path as cmdline args
     assert(argc==3);
     // input path to get frames
-    std::string input_path = argv[2];
-    cv::VideoCapture cap(input_path);
+    std::string videoPath = argv[2];
+    cv::VideoCapture cap(videoPath);
     if (!cap.isOpened())
     {
         std::cerr << "Error: Cannot open video." << std::endl;
@@ -49,8 +49,8 @@ int run (int argc, char *argv[])
     int MAX_FRAMES= std::stoi(argv[1]);
     while (true)
     {
-        if(frame_count>=MAX_FRAMES){
-            printf("No fo frames computed : %d\n",frame_count);
+        if(frameCount>=MAX_FRAMES){
+            printf("No fo frames computed : %d\n",frameCount);
             break;
         }
         cap >> frame;
@@ -69,7 +69,7 @@ int run (int argc, char *argv[])
             std::cerr << e.what() << std::endl;
             break;
         }
-        frame_count+=1;
+        frameCount+=1;
     }
     cap.release();
     return 0;
