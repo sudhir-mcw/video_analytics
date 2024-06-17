@@ -1,6 +1,11 @@
 
+**C++ YOLOv8 ONNXRuntime** inference code for *Face Detection* 
 
-**C++ YOLOv8 ONNXRuntime** inference code for *Object Detection* 
+## Machine Requirements:
+- Processor Architecture: ARM64
+- RAM: Minimum 8GB
+- OS: Ubuntu 20.04 
+- Storage: Minimum 64GB
 
 ## Prequisites:
 - OpenCV 4
@@ -10,13 +15,13 @@
 - g++ compiler
 - wget
 
-## Installation
+## OpenCV Installation
 - Install OpenCV in system using the following command 
 ```
    sudo apt update
    sudo apt install libopencv-dev cmake make g++ wget
 ```
-# Build and Run in Linux
+# Build 
 - Clone the repo and switch to cpp_deafult_timer
 ```
     git clone https://github.com/sudhir-mcw/video_analytics.git
@@ -40,28 +45,25 @@ tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
     sh build.sh
 ``` 
-- To run the project 
-
-Clear the exisisting logs
-```
-    rm *.log
-```
-run the application and log metrics
-```
-    sh run.sh <no_of_frames> <input_video_path> | tee -a output.log
-```
-Example: to limit the no of frames from the video
-```
-    sh run.sh 100 ./input/test_video_2.mp4 | tee -a output.log
-```
+# Run in Single Core
 * To limit the number of cores while running use taskset utility
 ```
-    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames> <input_video_path>  | tee -a output.log
+    taskset -c <core> ./build/yolov8_ort <no_of_frames> <input_video_path>  | tee -a <path_to_output.log>
 ```
-Example: to run the application on core 0 and 1
+Example: to run the application for 50 frames on core 0 \
+`
+    taskset -c 0 ./build/yolov8_ort 50 ./input/test_video_2.mp4 | tee -a output.log
+`
+# Run in Multiple Cores
+* To limit the number of cores while running use taskset utility
 ```
+    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames> <input_video_path>  | tee -a <path_to_output.log>
+```
+Example: to run the application for 50 frames on core 0 and 1 \
+`
     taskset -c 0,1 ./build/yolov8_ort 50 ./input/test_video_2.mp4 | tee -a output.log
-```
+`
+# Analyze
 - To calculate the average of pre and post process timings run
 ```
     python3 measure_time.py output.log

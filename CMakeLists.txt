@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(yolov8_ort)
 
+
 find_package(OpenCV REQUIRED)
 find_package(Threads)
 include_directories("include/")
 
 add_executable(yolov8_ort
                src/utils.cpp
-               src/yolov8Predictor.cpp
+               src/yolov8_predictor.cpp
                src/main.cpp)
 
 set(CMAKE_CXX_STANDARD 17)

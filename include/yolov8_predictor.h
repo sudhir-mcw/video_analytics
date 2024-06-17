@@ -16,6 +16,8 @@ public:
                   float maskThreshold);
     std::vector<Yolov8Result> predict(cv::Mat &image);
     int classNums = 80;
+    std::vector<std::string> classNames;
+
 
 private:
     Ort::Env env{nullptr};

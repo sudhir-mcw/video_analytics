@@ -8,7 +8,7 @@
 #include <string>
 
 #include "utils.h"
-#include "yolov8Predictor.h"
+#include "yolov8_predictor.h"
 
 int main(int argc, char *argv[])
 {

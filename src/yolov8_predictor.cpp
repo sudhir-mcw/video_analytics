@@ -1,5 +1,4 @@
-#include "yolov8Predictor.h"
-#include <ctime>
+#include "yolov8_predictor.h"
 #include <chrono>
 
 YOLOPredictor::YOLOPredictor(const std::string &modelPath,
@@ -88,6 +87,9 @@ YOLOPredictor::YOLOPredictor(const std::string &modelPath,
                 classNums = outputTensorShape[1] - 4 - 32;
         }
     }
+    const std::string classNamesPath = "./face.names";
+    classNames = utils::loadNames(classNamesPath);
+
 
 }
 void YOLOPredictor::getBestClassInfo(std::vector<float>::iterator it,
@@ -123,7 +125,7 @@ cv::Mat YOLOPredictor::getMask(const cv::Mat &maskProposals,
 }
 void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int64_t> &inputTensorShape)
 {
-    auto preproceestartTime =  std::chrono::high_resolution_clock::now();
+    auto preProceesStartTime =  std::chrono::high_resolution_clock::now();
     cv::Mat resizedImage, floatImage;
     cv::cvtColor(image, resizedImage, cv::COLOR_BGR2RGB);
     utils::letterbox(resizedImage, resizedImage, cv::Size((int)this->inputShapes[0][2], (int)this->inputShapes[0][3]),
@@ -142,21 +144,18 @@ void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int6
         chw[i] = cv::Mat(floatImageSize, CV_32FC1, blob + i * floatImageSize.width * floatImageSize.height);
     }
     cv::split(floatImage, chw);
-    auto preproceeendTime =  std::chrono::high_resolution_clock::now();
-    auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(preproceeendTime - preproceestartTime).count();
+    auto preProceesEndTime =  std::chrono::high_resolution_clock::now();
+    auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(preProceesEndTime - preProceesStartTime).count();
     printf("Time for pre processing : %ld\n" , (time) );
 }
 std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedImageShape,
                                                         const cv::Size &originalImageShape,
                                                         std::vector<Ort::Value> &outputTensors,cv::Mat &image)
 {
-    auto postprocessingstartTime =  std::chrono::high_resolution_clock::now();
+    auto postProcessStartTime =  std::chrono::high_resolution_clock::now();
     std::vector<cv::Rect> boxes;
     std::vector<float> confs;
     std::vector<int> classIds;
-    const std::string classNamesPath = "./face.names";
-    const std::vector<std::string> classNames = utils::loadNames(classNamesPath);
-
     float *boxOutput = outputTensors[0].GetTensorMutableData<float>();
     //[1,4+n,8400]=>[1,8400,4+n] or [1,4+n+32,8400]=>[1,8400,4+n+32]
     cv::Mat output0 = cv::Mat(cv::Size((int)this->outputShapes[0][2], (int)this->outputShapes[0][1]), CV_32F, boxOutput).t();
@@ -212,9 +211,9 @@ std::vector<Yolov8Result> YOLOPredictor::postprocessing(const cv::Size &resizedI
         res.classId = classIds[idx];
         results.emplace_back(res);
     }
-    utils::visualizeDetection(image,results,classNames);
-    auto postprocessingendTime =  std::chrono::high_resolution_clock::now();
-    auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(postprocessingendTime - postprocessingstartTime).count();
+    utils::visualizeDetection(image,results,this->classNames);
+    auto postProcessEndTime =  std::chrono::high_resolution_clock::now();
+    auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(postProcessEndTime - postProcessStartTime).count();
     printf ("Time for post processing : %ld\n",(time) );
     return results;
 }
