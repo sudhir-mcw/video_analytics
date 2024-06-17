@@ -13,6 +13,14 @@ postprocess_times = []
 pre_process_clock_cycles=[]
 post_process_clock_cycles=[]
 
+# modify this based on the core number pipeline is running on
+# for running in single core on core 0 use  
+start_core = 0
+end_core   = 0
+# if running with multiple cores 0,1,2,3
+# start_core = 0
+# end_core   = 3
+
 i=0
 while i<len(df)-1 :
     if "pre process start" in df.iloc[i]['Message'] and "pre process end" in  df.iloc[i+1]['Message']:
@@ -39,12 +47,10 @@ while i<len(df)-1 :
         index = index/1000
         index2 = int(time2 * 1000)
         index2 = index2/1000
-        start_index = metrics_df.columns.get_loc('Cycles:CPU Cycles [0]')
-        end_index = metrics_df.columns.get_loc('Cycles:CPU Cycles [31]')
+        start_index = metrics_df.columns.get_loc(f'Cycles:CPU Cycles [{start_core}]')
+        end_index = metrics_df.columns.get_loc(f'Cycles:CPU Cycles [{end_core}]')
         row = metrics_df[(metrics_df['Index (s)'] >= index) & (metrics_df['Index (s)'] <= index2)]
         cpu_cycles_mean = row.iloc[:,start_index:end_index+1].mean(axis=1)
-        if i==0:
-            print(row.iloc[:,start_index:end_index+1])
         pre_process_clock_cycles.append(cpu_cycles_mean.iloc[-1])
     elif "post process start" in df.iloc[i]['Message'] and "post process end" in  df.iloc[i+1]['Message']:
         time1 = (df.iloc[i]['When (s)'])
@@ -71,8 +77,8 @@ while i<len(df)-1 :
         index = index/1000
         index2 = int(time2 * 1000)
         index2 = index2/1000
-        start_index = metrics_df.columns.get_loc('Cycles:CPU Cycles [0]')
-        end_index = metrics_df.columns.get_loc('Cycles:CPU Cycles [31]')
+        start_index = metrics_df.columns.get_loc(f'Cycles:CPU Cycles [{start_core}]')
+        end_index = metrics_df.columns.get_loc(f'Cycles:CPU Cycles [{end_core}]')
         row = metrics_df[(metrics_df['Index (s)'] >= index) & (metrics_df['Index (s)'] <= index2)]
         cpu_cycles_mean = row.iloc[:,start_index:end_index+1].mean(axis=1)
         

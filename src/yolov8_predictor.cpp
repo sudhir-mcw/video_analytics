@@ -1,4 +1,4 @@
-#include "yolov8Predictor.h"
+#include "yolov8_predictor.h"
 #include "streamline_annotate.h"
 
 YOLOPredictor::YOLOPredictor(const std::string &modelPath,

@@ -11,7 +11,7 @@ include_directories(${CMAKE_SOURCE_DIR}/gator/annotate)
 
 add_executable(yolov8_ort
                src/utils.cpp
-               src/yolov8Predictor.cpp
+               src/yolov8_predictor.cpp
                src/main.cpp
                )
                
