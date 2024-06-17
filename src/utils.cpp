@@ -1,5 +1,6 @@
-#include "utils.h"
 #include <sys/sysinfo.h>
+
+#include "utils.h"
 
 size_t utils::vectorProduct(const std::vector<int64_t> &vector)
 {

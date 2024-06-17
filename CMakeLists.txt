@@ -7,7 +7,7 @@ include_directories("include/")
 
 add_executable(yolov8_ort
                src/utils.cpp
-               src/yolov8Predictor.cpp
+               src/yolov8_predictor.cpp
                src/main.cpp)
 
 set(CMAKE_CXX_STANDARD 17)

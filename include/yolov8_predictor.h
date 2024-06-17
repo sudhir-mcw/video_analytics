@@ -5,7 +5,6 @@
 
 #include "utils.h"
 
-
 class YOLOPredictor
 {
 public:
@@ -15,7 +14,6 @@ public:
                   float confThreshold,
                   float iouThreshold,
                   float maskThreshold);
-    // ~YOLOPredictor();
     std::vector<Yolov8Result> predict(cv::Mat &image);
     int classNums = 80;
 
@@ -28,25 +26,22 @@ private:
     std::vector<Yolov8Result> postprocessing(const cv::Size &resizedImageShape,
                                              const cv::Size &originalImageShape,
                                              std::vector<Ort::Value> &outputTensors,cv::Mat & image);
-
     static void getBestClassInfo(std::vector<float>::iterator it,
                                  float &bestConf,
                                  int &bestClassId,
                                  const int _classNums);
     cv::Mat getMask(const cv::Mat &maskProposals, const cv::Mat &maskProtos);
-    bool isDynamicInputShape{};
-
+    
     std::vector<const char *> inputNames;
     std::vector<Ort::AllocatedStringPtr> input_names_ptr;
-
     std::vector<const char *> outputNames;
     std::vector<Ort::AllocatedStringPtr> output_names_ptr;
-
     std::vector<std::vector<int64_t>> inputShapes;
     std::vector<std::vector<int64_t>> outputShapes;
+
+    bool isDynamicInputShape{};
     float confThreshold = 0.3f;
     float iouThreshold = 0.4f;
-
     bool hasMask = false;
     float maskThreshold = 0.5f;
 };

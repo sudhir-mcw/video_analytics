@@ -1,4 +1,4 @@
-#include "yolov8Predictor.h"
+#include "yolov8_predictor.h"
 
 YOLOPredictor::YOLOPredictor(const std::string &modelPath,
                              const bool &isGPU,
