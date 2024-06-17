@@ -1,4 +1,4 @@
-#include "yolov8Predictor.h"
+#include "yolov8_predictor.h"
 #include  "main.h"
 
 YOLOPredictor::YOLOPredictor(const std::string &modelPath,
@@ -129,7 +129,7 @@ void YOLOPredictor::preprocessing(cv::Mat &image, float *&blob, std::vector<int6
                      false, true, 32);
     inputTensorShape[2] = resizedImage.rows;
     inputTensorShape[3] = resizedImage.cols;
-    resizedImage.convertTo(floatImage, CV_32F, 1 / 255.0);
+    resizedImage.convertTo(floatImage, CV_32F, 1.0 / 255.0);
     blob = new float[floatImage.cols * floatImage.rows * floatImage.channels()];
     cv::Size floatImageSize{floatImage.cols, floatImage.rows};
     // hwc -> chw

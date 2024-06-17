@@ -8,7 +8,7 @@
 
 #include "main.h"
 #include "utils.h"
-#include "yolov8Predictor.h"
+#include "yolov8_predictor.h"
 
 int run (int argc, char *argv[])
 {
@@ -45,11 +45,11 @@ int run (int argc, char *argv[])
         return -1;
     }
     cv::Mat frame; 
-    int frame_count = 0;
-    int MAX_FRAMES= std::stoi(argv[1]);
+    int frameCount = 0;
+    int maxFrames= std::stoi(argv[1]);
     while (true)
     {
-        if(frameCount>=MAX_FRAMES){
+        if(frameCount>=maxFrames){
             printf("No fo frames computed : %d\n",frameCount);
             break;
         }

@@ -1,22 +1,26 @@
 
 
-**C++ YOLOv8 ONNXRuntime** inference code for *Object Detection* 
-
+**C++ YOLOv8 ONNXRuntime** inference code for *Face Detection* 
+## Machine Requirements:
+- Processor Architecture: ARM64
+- RAM: Minimum 8GB
+- OS: Ubuntu 20.04 
+- Storage: Minimum 64GB
 ## Prequisites:
 - OpenCV 4
 - ONNXRuntime 
 - Perfetto 
-- CMake version 3.13+
-- Make version 4.2.1+
+- cmake 
+- make
 - g++ 
 
-## Installation
+## OpenCV Installation
 - Install OpenCV in system using the following command 
 ```
    sudo apt update
    sudo apt install libopencv-dev cmake make wget g++
 ```
-# Build and Run in Linux
+# Build 
 - Clone the repo and switch to cpp_perfetto
 ```
     git clone https://github.com/sudhir-mcw/video_analytics.git
@@ -26,15 +30,15 @@
 ```
 -  Download the model file and save it in models/ folder if not present already.
 ```
-cd video_analytics
-wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
-mkdir models
-mv yolov8n-face-lindevs.onnx models
+    cd video_analytics
+    wget https://github.com/lindevs/yolov8-face/releases/latest/download/yolov8n-face-lindevs.onnx
+    mkdir models
+    mv yolov8n-face-lindevs.onnx models
 ```
 Download the onnxruntime from the releases or use the command inside repo 
 ```
-wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-aarch64-1.18.0.tgz
-tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
+    wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-aarch64-1.18.0.tgz
+    tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
 - Download the perfetto binaries from the github repo 
 ```
@@ -51,6 +55,7 @@ tar -xvf onnxruntime-linux-aarch64-1.18.0.tgz
 ```
     sh build.sh
 ``` 
+# Run in Single Core 
 - To run the project 
 open three terminal  and follow the steps in individual windows,
 Navigate to previosly extracted linux-arm64/ folder in all the terminals
@@ -58,52 +63,75 @@ Example
 ```
 cd video_analytics/perfetto/linux-arm64
 ```
-Terminal 1 
+- Terminal 1 
 ```
 sudo ./tracebox traced
 ```
-Terminal 2 
+- Terminal 2 
 ```
 sudo ./traced_probes
 ```
-Terminal 3
+- Terminal 3
 ```
-sudo ./tracebox perfetto -c <path_to_config_file> --txt -o trace_file 
+sudo ./tracebox perfetto -c <path_to_config_file> --txt -o <path_to_trace_file> 
 ```
-Here path to config is root_of_the_project/system_wide_trace_cfg.pbtxt \
-Example Usage
-```
+Here path to config is root_of_the_project/system_wide_trace_cfg.pbtxt 
+
+Example Usage \
+`
 sudo ./tracebox perfetto -c ../../system_wide_trace_cfg.pbtxt --txt -o ../../output/trace_file 
-``` 
-Once you see enabled ftrace in the Terminal 2 window run the command
-Terminal 4 
+` 
+
+Once you see enabled ftrace in the Terminal 2 window run the next command in terminal 4
+- Terminal 4 
 ```
    cd video_analytics
-   sudo  sh run.sh <no_of_frames> <input_video_path>
+   sudo taskset -c <core_number> ./build/yolov8_ort <no_of_frames> <input_video_path>
 ```
-Example: to limit the no of frames from the video 
-```
-   sudo sh run.sh 50 ./input/test_video_2.mp4
-```
-Note: Inorder to collect the trace for 100 frames increase the duration in system_wide_trace_cfg.pbtxt file from  to 10000  ms or more
-* To limit the number of cores while running use taskset utility
-```
-    taskset -c <core>,<core> ./build/yolov8_ort <no_of_frames> <input_video_path>
-```
-Example: to run the application on core 0 and 1
-```
-    taskset -c 0,1 ./build/yolov8_ort 50 ./input/test_video_2.mp4
-```
+Example: To run the appliaction for 50 frames on core 0  \
+`
+   sudo  taskset -c 0 ./build/yolov8_ort  50 ./input/test_video_2.mp4
+` 
 
-Once the trace is completed run the following in Terminal 3 in location video_analytics/perfetto/linux-arm64
+Note: Inorder to collect the trace for 100 frames increase the duration in system_wide_trace_cfg.pbtxt file upto 60000ms
+# Run in Multiple Cores
+* Repeat the steps in terminal 1,2,3 as mentioned for Run in Single Core
+
+- Terminal 4 
 ```
-sudo ./traceconv json ../../output/trace_file ../../output/trace_file.json
+   cd video_analytics
+   sudo taskset -c <core_number>,<core_number> ./build/yolov8_ort <no_of_frames> <input_video_path>
+```
+Example: To run the appliaction for 50 frames on core 0 and 1  \
+`
+   sudo  taskset -c 0,1 ./build/yolov8_ort  50 ./input/test_video_2.mp4
+` 
+
+Note: Inorder to collect the trace for 100 frames increase the duration in system_wide_trace_cfg.pbtxt file upto 60000ms
+# Trace Conversion 
+Once the trace is completed run the following in Terminal 3 execute the command in location video_analytics/perfetto/linux-arm64 
+```
+cd video_analytics/perfetto/linux-arm64
+sudo ./traceconv json <path_to_trace_file> <path_to_dump_converted_json>
 ``` 
-The command will generate a json file from the trace file obtained which can be viewed in https://ui.perfetto.dev
+Example: \
+`
+sudo ./traceconv json ../../output/trace_file ../../output/trace_file.json
+`
+
+Note: The command will genrate a json from the trace file, In case if you face any error while runnning the above command, check if you have created an output/ folder in root of the project
+
+# Analyze
+The genrated trace json file can be viewed with the UI visualizer in https://ui.perfetto.dev
+
 Run the measure_trace.py with trace_file.json location as argument
 ```
-python3 measure_trace.py ./output/trace_file.json 
+python3 measure_trace.py <path_to_json_trace>
 ```
+Example: \
+`
+python3 measure_trace.py ./output/trace_file.json 
+`
 
 
 

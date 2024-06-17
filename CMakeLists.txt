@@ -13,7 +13,7 @@ include_directories(include)
 add_library(perfetto STATIC sdk/perfetto.cc)
 add_executable(yolov8_ort
                src/utils.cpp
-               src/yolov8Predictor.cpp
+               src/yolov8_predictor.cpp
                src/main.cpp
                src/trace_categories.cc
                )
